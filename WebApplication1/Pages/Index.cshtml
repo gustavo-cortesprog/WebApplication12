@@ -1,0 +1,535 @@
+@page
+@model WebApplication1.Pages.IndexModel
+@{
+    ViewData["Title"] = "Aprende. Practica. Avanza.";
+}
+
+@* Inicio y resumen del aprendizaje. Las métricas se completan al cargar la cuenta. *@
+<section id="view-inicio" class="view">
+    <div class="eyebrow">APRENDE. PRACTICA. AVANZA.</div>
+    <div class="page-heading">
+        <div>
+            <h1>Tu próximo paso<br>empieza con conocimiento<span>.</span>
+            </h1>
+            <p>Un espacio para entender las inversiones y acercarte a lo que quieres.</p>
+        </div>
+        <span class="pill">@Model.Equipo</span>
+    </div>
+    <div class="hero-grid">
+        <article class="hero-card">
+            <div>
+                <span class="eyebrow">DE LA TEORÍA A TU PRIMERA DECISIÓN</span>
+                <h2>El mercado cambia.<br>Tu aprendizaje se queda.</h2>
+                <p>Explora acciones y criptomonedas, construye un portafolio virtual y aprende de cada resultado.</p>
+                <button class="button" data-view="mercados">Explorar el simulador ↗</button>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+                <span class="orbit one">
+                </span>
+                <span class="orbit two">
+                </span>
+                <span class="orbit three">
+                </span>
+                <div class="coin">V</div>
+                <span class="art-label">CONOCIMIENTO + PRÁCTICA</span>
+            </div>
+        </article>
+        <article class="panel path-card">
+            <span class="eyebrow">TU RUTA DE APRENDIZAJE</span>
+            <h2>Pequeños pasos.<br>Mejores preguntas.</h2>
+            <ol class="path">
+                <li>
+                    <b>01</b>
+                    <span>Entiende lo esencial<small>Acciones, cripto y riesgo</small>
+                    </span>
+                </li>
+                <li>
+                    <b>02</b>
+                    <span>Practica una decisión<small>10,000 USD virtuales al registrarte</small>
+                    </span>
+                </li>
+                <li>
+                    <b>03</b>
+                    <span>Construye una meta<small>Compara escenarios de ahorro</small>
+                    </span>
+                </li>
+            </ol>
+            <button class="text-button" data-view="aprende">Comenzar en la academia →</button>
+        </article>
+    </div>
+    <div class="section-heading">
+        <h2>Tu panorama</h2>
+        <span class="muted">Importes del simulador en USD</span>
+    </div>
+    <div id="metrics" class="metrics">
+    </div>
+    <div class="bottom-grid">
+        <article class="panel">
+            <span class="eyebrow">ANTES DE INVERTIR</span>
+            <h2>Una ganancia no cuenta toda la historia.</h2>
+            <p>Aprende a distinguir rendimiento, riesgo y plazo. Los resultados simulados no predicen resultados futuros.</p>
+            <button class="text-button" data-view="aprende">Explorar las lecciones →</button>
+        </article>
+        <article class="panel">
+            <span class="eyebrow">DALE UN PROPÓSITO</span>
+            <h2>¿Un viaje? ¿Tu primer carro?</h2>
+            <p>Convierte una idea en números. Compara tus aportaciones con escenarios hipotéticos, incluyendo pérdidas.</p>
+            <button class="text-button" data-view="metas">Crear una meta →</button>
+        </article>
+    </div>
+</section>
+@* Mercados y simulador. Contiene las cotizaciones, el directorio de ahorro y las tasas de CETES. *@
+<section id="view-mercados" class="view" hidden>
+    <div class="eyebrow">OBSERVA Y PRACTICA</div>
+    <div class="section-heading">
+        <div>
+            <h1>Mercados y simulador</h1>
+            <p>Consulta cotizaciones y practica inversiones y ahorro con dinero virtual.</p>
+        </div>
+        <label id="market-mode-label" class="mode-label">Fuente de precios<select id="market-mode">
+                <option value="demo">Demostración · precios ficticios</option>
+                <option value="real">Mercado · proveedores externos</option>
+            </select>
+        </label>
+    </div>
+    <div id="market-sections" class="market-chart-periods" role="group" aria-label="Secciones de Mercados y simulador">
+        <button class="chip" type="button" data-market-section="quotes" aria-controls="market-quotes-panel" aria-pressed="true">Cripto y acciones</button>
+        <button class="chip" type="button" data-market-section="savings" aria-controls="market-savings-panel" aria-pressed="false">SOFIPOs y bancos</button>
+        <button class="chip" type="button" data-market-section="cetes" aria-controls="market-cetes-panel" aria-pressed="false">CETES</button>
+    </div>
+    <div id="market-quotes-panel">
+        <div id="market-note" class="notice">
+        </div>
+        <div class="market-grid">
+            <article class="panel market-list">
+                <div class="section-heading">
+                    <h2>Explorar activos</h2>
+                    <button id="refresh-market" class="text-button">Actualizar ↻</button>
+                </div>
+                @* JavaScript llena los contenedores de criptomonedas y acciones con las cotizaciones del catálogo. *@
+                <div id="market-list">
+                    <section class="market-group" aria-labelledby="market-crypto-title">
+                        <h3 id="market-crypto-title">Cripto</h3>
+                        <div id="market-crypto"></div>
+                    </section>
+                    <section class="market-group" aria-labelledby="market-stocks-title">
+                        <h3 id="market-stocks-title">Acciones</h3>
+                        <div id="market-stocks"></div>
+                    </section>
+                </div>
+                <p class="fine">Consulta automática cada 20 s mientras esta sección esté visible. La caché y la frecuencia del proveedor pueden conservar el mismo valor.</p>
+            </article>
+            <article class="panel chart-panel">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow" id="chart-symbol">BTC</span>
+                        <h2 id="chart-title">Bitcoin</h2>
+                    </div>
+                    <span id="chart-price" class="large-price">—</span>
+                </div>
+                @* Selecciona los datos de la gráfica. El mismo activo puede mostrar un historial o muestras de la sesión. *@
+                <div id="market-chart-periods" class="market-chart-periods" role="group" aria-label="Vista de la gráfica">
+                    <button class="chip" type="button" data-period="historial" aria-pressed="true">Historial</button>
+                    <button class="chip" type="button" data-period="seguimiento" aria-pressed="false" hidden>Seguimiento</button>
+                </div>
+                <div id="market-chart" class="chart" role="img" aria-label="Gráfica de precios del activo seleccionado">
+                </div>
+                <p id="chart-source" class="fine">
+                </p>
+                <p id="quote-note" class="fine">
+                </p>
+            </article>
+        </div>
+        <article class="panel">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">TU LABORATORIO</span>
+                    <h2>Una operación, una oportunidad de aprender.</h2>
+                </div>
+                <span class="badge">SIMULACIÓN</span>
+            </div>
+            @* Envía una compra o venta virtual. El servidor confirma el precio y valida saldo o unidades. *@
+            <form id="trade-form" class="form-grid">
+                <label>Activo<select id="trade-symbol" name="simbolo">
+                    </select>
+                </label>
+                <label>Operación<select name="tipo">
+                        <option value="compra">Comprar</option>
+                        <option value="venta">Vender</option>
+                    </select>
+                </label>
+                <label>Cantidad de unidades<input name="cantidad" type="number" min="0.00000001" max="1000000" step="0.00000001" value="0.001" required>
+                </label>
+                <div class="form-action">
+                    <button class="button" type="submit">Registrar operación virtual</button>
+                </div>
+            </form>
+            <p class="fine">Se usa el precio consultado por el servidor al procesar la orden; puede variar respecto a la pantalla. Costo mínimo: 0.01 USD. Sin comisiones, impuestos, dividendos ni deslizamiento. Las posiciones de demostración y de mercado se mantienen separadas.</p>
+            <p id="trade-estimate" class="fine" role="status"></p>
+            <p id="trade-result" role="status">
+            </p>
+        </article>
+    </div>
+    <section id="market-savings-panel" class="market-detail" hidden>
+        @{
+            var sofipos = new[]
+            {
+                (Nombre: "Klar", Entidad: "Klar Technologies", Fuente: "https://www.cnbv.gob.mx/Entidades-Autorizadas/Paginas/Sofipos.aspx"),
+                (Nombre: "Finsus", Entidad: "Financiera Sustentable de México", Fuente: "https://finsus.mx/cumplimiento/une"),
+                (Nombre: "Stori", Entidad: "Stori México", Fuente: "https://www.storicard.com/stori-cuentamas/preguntas-frecuentes/quienes-supervisan-a-stori-cuenta"),
+                (Nombre: "Kubo Financiero", Entidad: "Ku-Bo Financiero", Fuente: "https://www.cnbv.gob.mx/Entidades-Autorizadas/Paginas/Sofipos.aspx"),
+            };
+            var bancos = new[]
+            {
+                (Nombre: "Nu", Entidad: "Nubank · banco desde agosto de 2026", Fuente: "https://blog.nu.com.mx/nubank/nubank-banco-mexico/"),
+                (Nombre: "Revolut", Entidad: "Revolut Bank", Fuente: "https://www.revolut.com/en-ES/news/revolut_launches_full_banking_operations_in_mexico_accelerating_global_expansion/"),
+                (Nombre: "Plata", Entidad: "Banco Plata", Fuente: "https://prime.platacard.mx/file-service/static/Informe_trimestral_de_riesgos_1T_2026.pdf"),
+            };
+            var gruposAhorro = new[] { (Titulo: "SOFIPOs", Tipo: "SOFIPO", Lista: sofipos), (Titulo: "Bancos", Tipo: "Banco", Lista: bancos) };
+        }
+        <div class="market-grid">
+            <article class="panel">
+                <h2>Instituciones de ahorro en México</h2>
+                @foreach (var grupo in gruposAhorro)
+                {
+                    <section class="market-group">
+                        <h3>@grupo.Titulo</h3>
+                        @foreach (var institucion in grupo.Lista)
+                        {
+                            <div class="savings-row">
+                                <button type="button" class="market-row" data-savings-name="@institucion.Nombre" data-savings-type="@grupo.Tipo" aria-pressed="@(institucion.Nombre == "Klar" ? "true" : "false")">
+                                    <span><strong>@institucion.Nombre</strong><small>@institucion.Entidad</small></span>
+                                </button>
+                                <a class="text-button" href="@institucion.Fuente" target="_blank" rel="noopener noreferrer" aria-label="Fuente de @institucion.Nombre">Fuente ↗</a>
+                            </div>
+                        }
+                    </section>
+                }
+                <p class="fine">Clasificación consultada en noviembre de 2026.</p>
+            </article>
+            <article class="panel">
+                <h2>Simular ahorro</h2>
+                <p id="savings-selected" class="fine">Klar · SOFIPO</p>
+                @* Calcula un escenario con la tasa anual que escribe el usuario. *@
+                <form id="market-savings-form" class="form-grid">
+                    <label>Capital en MXN<input type="number" name="capital" min="1" max="100000000" step="0.01" value="1000" required></label>
+                    <label>Plazo en días<input type="number" name="dias" min="1" max="3650" value="90" required></label>
+                    <label>Tasa anual hipotética (%)<input type="number" name="tasa" min="0" max="100" step="0.001" placeholder="Ej. 8" required></label>
+                    <div class="form-action"><button class="button" type="submit">Calcular</button></div>
+                </form>
+                <div id="market-savings-result" class="market-return" role="status"></div>
+                <p class="fine">Usa interés simple con base de 365 días, antes de impuestos. La tasa la ingresas tú y las condiciones de cada producto se consultan con su institución.</p>
+            </article>
+        </div>
+    </section>
+    <section id="market-cetes-panel" class="market-detail" hidden>
+        <div class="market-grid">
+            <article class="panel">
+                <div class="section-heading">
+                    <h2>Rendimientos de CETES</h2>
+                    <button id="refresh-cetes" class="text-button" type="button">Actualizar ↻</button>
+                </div>
+                <p id="cetes-status" class="fine" role="status"></p>
+                <div id="cetes-rates"></div>
+                <p class="fine">Vantex consulta a Banxico cada minuto mientras esta sección está visible. Las tasas son anuales y cambian con las subastas publicadas.</p>
+                <a class="text-button" href="https://www.banxico.org.mx/tipcamb/llenarTasasInteresAction.do?idioma=sp" target="_blank" rel="noopener noreferrer">Resultados de Banxico ↗</a>
+            </article>
+            <article class="panel">
+                <h2>Simular CETES</h2>
+                <p id="cetes-selected" class="fine">Elige un plazo para usar la tasa publicada.</p>
+                @* Usa el plazo elegido y la tasa de la última subasta disponible para estimar el resultado. *@
+                <form id="market-cetes-form" class="form-grid">
+                    <label>Capital en MXN<input type="number" name="capital" min="1" max="100000000" step="0.01" value="1000" required></label>
+                    <div class="form-action"><button class="button" type="submit" disabled>Calcular</button></div>
+                </form>
+                <div id="market-cetes-result" class="market-return" role="status"></div>
+                <p class="fine">Estimación para títulos completos, con valor nominal de $10 MXN, plazo indicado y base de 360 días. Saldo final con efectivo sobrante, antes de impuestos.</p>
+            </article>
+        </div>
+    </section>
+</section>
+@* Portafolio virtual, historial de movimientos y generación del código para Vantex Móvil. *@
+<section id="view-portafolio" class="view" hidden>
+    <div class="eyebrow">APRENDE DE CADA RESULTADO</div>
+    <h1>Mi portafolio</h1>
+    <p>La ganancia no realizada cambia con el precio. La realizada se registra al vender.</p>
+    <article id="mobile-link-panel" class="panel" hidden>
+        <div class="section-heading">
+            <div>
+                <h2>Vincular Vantex Móvil</h2>
+                <p>Consulta tus posiciones virtuales y recibe alertas en la aplicación.</p>
+            </div>
+            <button id="mobile-link-button" class="button secondary" type="button">Generar código</button>
+        </div>
+        <p id="mobile-link-code" role="status" hidden></p>
+    </article>
+    <div id="portfolio-metrics" class="metrics">
+    </div>
+    <article class="panel">
+        <h2>Tus posiciones</h2>
+        <div id="holdings" class="table-wrap">
+        </div>
+    </article>
+    <article class="panel">
+        <h2>Historial de operaciones</h2>
+        <div id="trades" class="table-wrap">
+        </div>
+    </article>
+</section>
+@* Academia. Las lecciones y cuestionarios se cargan desde el servidor. *@
+<section id="view-aprende" class="view" hidden>
+    <div class="eyebrow">CONOCER TAMBIÉN ES AVANZAR</div>
+    <div class="section-heading">
+        <div>
+            <h1>Academia Vantex</h1>
+            <p>Responde las preguntas y pon a prueba tus decisiones de inversión con dinero virtual.</p>
+        </div>
+        <span id="progress-label" class="pill">0 de @Model.TotalLecciones completadas</span>
+    </div>
+    <div class="progress-track">
+        <div id="progress-bar">
+        </div>
+    </div>
+    @* Contenedor que JavaScript llena con las preguntas, respuestas y prácticas de Academia. *@
+    <div id="lessons" class="lessons">
+    </div>
+
+    <div class="academy-simulator-intro">
+        <div>
+            <span class="eyebrow">PON EN PRÁCTICA LO APRENDIDO</span>
+            <h2>Laboratorio de inversiones</h2>
+            <p>Prueba cuánto podría crecer tu dinero y cuánto podrías perder en distintos escenarios. No se realizan compras ni se mueve dinero real.</p>
+        </div>
+        <span class="badge">SIMULADOR EDUCATIVO · MXN</span>
+    </div>
+    <div class="goals-grid academy-simulator">
+        <article class="panel">
+            <div class="eyebrow">01 · TU PUNTO DE PARTIDA</div>
+            <h2>¿Con cuánto comenzarías?</h2>
+            <form id="academy-investment-form" class="stack-form">
+                <div class="form-grid two">
+                    <label>Ingreso mensual (MXN)
+                        <input name="ingreso" type="number" min="0" max="100000000" step="100" value="18000" required>
+                    </label>
+                    <label>Ahorro acumulado (MXN)
+                        <input name="ahorro" type="number" min="0" max="100000000" step="100" value="25000" required>
+                    </label>
+                    <label>Capital inicial a invertir (MXN)
+                        <input name="capital" type="number" min="0" max="100000000" step="100" value="5000" required>
+                    </label>
+                    <label>Aportación mensual (MXN)
+                        <input name="mensual" type="number" min="0" max="1000000" step="100" value="1000" required>
+                    </label>
+                    <label>Plazo de inversión
+                        <select name="anios">
+                            <option value="1">1 año</option>
+                            <option value="3" selected>3 años</option>
+                            <option value="5">5 años</option>
+                            <option value="10">10 años</option>
+                        </select>
+                    </label>
+                    <label>Tipo de inversión para aprender
+                        <select name="tipoActivo">
+                            <option value="Acciones">Acciones</option>
+                            <option value="ETF diversificado">ETF diversificado</option>
+                            <option value="Criptomonedas">Criptomonedas</option>
+                            <option value="Renta fija">Renta fija</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="academy-rate-fields">
+                    <label>Escenario negativo anual (%)
+                        <input name="negativo" type="number" min="-100" max="0" step="0.5" value="-15" required>
+                    </label>
+                    <label>Escenario moderado anual (%)
+                        <input name="moderado" type="number" min="-50" max="100" step="0.5" value="6" required>
+                    </label>
+                    <label>Escenario positivo anual (%)
+                        <input name="positivo" type="number" min="0" max="200" step="0.5" value="15" required>
+                    </label>
+                </div>
+                <button class="button" type="submit">Simular mi inversión</button>
+                <p id="academy-investment-warning" class="fine" role="status">Ajusta los datos y compara los resultados. Los porcentajes son supuestos educativos.</p>
+            </form>
+        </article>
+        <article class="panel academy-results-panel">
+            <div class="eyebrow">02 · RESULTADOS ESTIMADOS</div>
+            <h2>¿Qué podría pasar con tu dinero?</h2>
+            <div class="academy-investment-summary">
+                <div><span>Capital inicial + aportaciones</span><strong id="academy-total-contributed">$8,000.00</strong></div>
+                <div><span>Plazo seleccionado</span><strong id="academy-period">3 años</strong></div>
+            </div>
+            <div id="academy-scenario-results" class="academy-scenario-results" aria-live="polite">
+                <div class="academy-scenario loss"><span>Escenario negativo</span><strong id="academy-loss-value">$—</strong><small id="academy-loss-detail">Posible pérdida: —</small></div>
+                <div class="academy-scenario neutral"><span>Escenario moderado</span><strong id="academy-neutral-value">$—</strong><small id="academy-neutral-detail">Resultado: —</small></div>
+                <div class="academy-scenario gain"><span>Escenario positivo</span><strong id="academy-gain-value">$—</strong><small id="academy-gain-detail">Posible ganancia: —</small></div>
+            </div>
+            <div class="academy-learning-note">
+                <strong>¿Cómo interpretar estos resultados?</strong>
+                <p id="academy-investment-explanation">El escenario negativo muestra que puedes terminar con menos dinero del que aportaste. El moderado y el positivo son hipótesis, no promesas.</p>
+            </div>
+        </article>
+    </div>
+    <p class="fine academy-disclaimer">Simulación matemática en pesos mexicanos. Considera aportaciones al final de cada mes y capitalización mensual. No incluye comisiones, impuestos, inflación ni variaciones reales del mercado. Los rendimientos pueden ser negativos y no están garantizados.</p>
+</section>
+@* Formulario de metas de ahorro y gráfica de la proyección elegida. *@
+<section id="view-metas" class="view" hidden>
+    <div class="eyebrow">DEL QUIERO AL CÓMO</div>
+    <h1>Tus metas merecen un plan.</h1>
+    <p>Usa una sola moneda en todos los importes. La proyección no convierte monedas ni predice el mercado.</p>
+    <div class="goals-grid">
+        <article class="panel">
+            <h2>Diseña tu próxima meta</h2>
+            <form id="goal-form" class="stack-form">
+                <label>¿Qué quieres conseguir?<input name="nombre" maxlength="80" value="Mi próximo teléfono" required>
+                </label>
+                <div class="form-grid two">
+                    <label>Costo objetivo<input name="costo" type="number" min="0.01" max="100000000" step="0.01" value="12000" required>
+                    </label>
+                    <label>Ahorro inicial<input name="inicial" type="number" min="0" max="100000000" step="0.01" value="2000" required>
+                    </label>
+                    <label>Aportación mensual<input name="mensual" type="number" min="0.01" max="1000000" step="0.01" value="1000" required>
+                    </label>
+                    <label>Tasa anual hipotética (%)<input name="tasaAnual" type="number" min="-50" max="50" step="0.1" value="0" required>
+                    </label>
+                </div>
+                <div class="button-row">
+                    <button class="button" type="submit">Explorar escenario</button>
+                    <button id="save-goal" class="button secondary" type="button">Guardar meta</button>
+                </div>
+            </form>
+        </article>
+        <article class="panel">
+            <span class="eyebrow">UN ESCENARIO, NO UNA PROMESA</span>
+            <h2 id="goal-headline">Cada aportación suma.</h2>
+            <div id="goal-chart" class="chart" role="img" aria-label="Proyección hipotética de ahorro">
+            </div>
+            <p id="goal-result" role="status">Completa los datos y explora tu escenario.</p>
+            <p id="goal-advice" class="fine">Compara una tasa de cero con una negativa. Los rendimientos de inversión son inciertos.</p>
+        </article>
+    </div>
+    <article class="panel">
+        <h2>Mis metas guardadas</h2>
+        <div id="saved-goals" class="saved-goals">
+        </div>
+    </article>
+</section>
+@* Presupuesto y escenarios personales que se guardan en este navegador. *@
+<section id="view-finanzas" class="view" hidden>
+    <div class="eyebrow">CONOCE TU DINERO ANTES DE INVERTIR</div>
+    <div class="section-heading">
+        <div>
+            <h1>Finanzas personales y simulador.</h1>
+            <p>Organiza tus ingresos, mide tu capacidad de ahorro y explora escenarios de inversión sin arriesgar dinero real.</p>
+        </div>
+        <span class="pill">MONEDA: MXN</span>
+    </div>
+    <div class="notice">Tus datos personales de este módulo se guardan en el navegador que estás utilizando. No se conectan con cuentas bancarias ni representan dinero real.</div>
+    <div class="goals-grid">
+        <article class="panel">
+            <div class="eyebrow">01 · TU SITUACIÓN ACTUAL</div>
+            <h2>¿Cómo están tus finanzas?</h2>
+            <form id="finance-form" class="stack-form">
+                <div class="form-grid two">
+                    <label>Ingreso mensual neto (MXN)<input name="ingreso" type="number" min="0" max="100000000" step="0.01" value="18000" required></label>
+                    <label>Gastos mensuales (MXN)<input name="gastos" type="number" min="0" max="100000000" step="0.01" value="10000" required></label>
+                    <label>Ahorro acumulado (MXN)<input name="ahorro" type="number" min="0" max="100000000" step="0.01" value="25000" required></label>
+                    <label>Ahorro mensual planeado (MXN)<input name="ahorroMensual" type="number" min="0" max="1000000" step="0.01" value="3000" required></label>
+                    <label>Presupuesto para invertir (MXN)<input name="inversion" type="number" min="0" max="100000000" step="0.01" value="2000" required></label>
+                </div>
+                <button class="button" type="submit">Guardar mi situación</button>
+                <p id="finance-save-status" class="fine" role="status">Inicia sesión para guardar tus datos en este navegador.</p>
+            </form>
+        </article>
+        <article class="panel">
+            <div class="eyebrow">TU RESUMEN</div>
+            <h2>Dinero disponible</h2>
+            <div id="finance-summary" class="finance-summary">
+                <div><span>Disponible después de gastos</span><strong id="finance-available">$8,000.00</strong></div>
+                <div><span>Ahorro acumulado</span><strong id="finance-saved">$25,000.00</strong></div>
+                <div><span>Presupuesto de inversión</span><strong id="finance-investment">$2,000.00</strong></div>
+            </div>
+            <p id="finance-guidance" class="fine">Primero cubre tus gastos esenciales y procura contar con un fondo de emergencia antes de invertir.</p>
+        </article>
+    </div>
+    <div class="goals-grid">
+        <article class="panel">
+            <div class="eyebrow">02 · SIMULADOR DE INVERSIÓN</div>
+            <h2>¿Qué podría pasar con tu inversión?</h2>
+            <form id="scenario-form" class="stack-form">
+                <label>Capital que deseas simular (MXN)<input name="capital" type="number" min="1" max="100000000" step="0.01" value="2000" required></label>
+                <div class="form-grid two">
+                    <label>Escenario positivo (%)<input name="positivo" type="number" min="0" max="500" step="0.1" value="15" required></label>
+                    <label>Escenario negativo (%)<input name="negativo" type="number" min="0" max="100" step="0.1" value="10" required></label>
+                </div>
+                <button class="button" type="submit">Calcular escenarios</button>
+            </form>
+            <div id="scenario-results" class="scenario-results" aria-live="polite">
+                <div><span>Si sube</span><strong class="positive">$2,300.00</strong><small>Ganancia: $300.00</small></div>
+                <div><span>Si baja</span><strong class="negative">$1,800.00</strong><small>Pérdida: $200.00</small></div>
+            </div>
+            <p class="fine">Los porcentajes son supuestos que tú eliges para aprender. No son predicciones, recomendaciones ni rendimientos garantizados. No incluyen comisiones, impuestos ni inflación.</p>
+        </article>
+        <article class="panel">
+            <div class="eyebrow">03 · PLANEA UNA META</div>
+            <h2>¿Cuánto te falta para conseguirla?</h2>
+            <form id="finance-goal-form" class="stack-form">
+                <label>Nombre de tu meta<input name="nombreMeta" maxlength="80" value="Mi próximo automóvil" required></label>
+                <div class="form-grid two">
+                    <label>Costo de la meta (MXN)<input name="objetivo" type="number" min="1" max="100000000" step="0.01" value="320000" required></label>
+                    <label>Ya llevo ahorrado (MXN)<input name="metaAhorrado" type="number" min="0" max="100000000" step="0.01" value="25000" required></label>
+                    <label>Aportación mensual (MXN)<input name="metaMensual" type="number" min="1" max="1000000" step="0.01" value="5000" required></label>
+                </div>
+                <button class="button" type="submit">Calcular mi meta</button>
+            </form>
+            <div id="finance-goal-result" class="goal-result" aria-live="polite">Con estos datos, calcula cuánto tiempo te tomaría alcanzar tu objetivo.</div>
+        </article>
+    </div>
+    <article class="panel">
+        <div class="eyebrow">04 · APRENDE A INTERPRETAR</div>
+        <h2>Antes de tomar una decisión, recuerda:</h2>
+        <div class="finance-lessons">
+            <div><strong>Rendimiento</strong><p>Es el cambio porcentual del valor de una inversión respecto al capital inicial.</p></div>
+            <div><strong>Riesgo</strong><p>Es la posibilidad de que el resultado sea distinto al esperado, incluida una pérdida.</p></div>
+            <div><strong>Diversificación</strong><p>Consiste en distribuir el dinero entre distintos activos para no depender de uno solo.</p></div>
+        </div>
+    </article>
+</section>
+
+@* Chat educativo con estado del proveedor y texto progresivo del modelo local. *@
+<section id="view-tutor" class="view" hidden>
+    <div class="eyebrow">APRENDER TAMBIÉN ES PREGUNTAR</div>
+    <h1>Tu espacio para resolver dudas.</h1>
+    <p>Pregunta por conceptos y ejemplos. No compartas contraseñas, datos bancarios ni información personal.</p>
+    <article class="panel chat-panel">
+        <div class="section-heading">
+            <h2>✦ Tutor Vantex</h2>
+            <div class="tutor-actions">
+                <span id="ai-status" class="badge">Comprobando conexión</span>
+                <button id="new-chat" class="text-button" type="button">Nueva conversación</button>
+            </div>
+        </div>
+        <div id="messages" class="messages" role="log" aria-live="polite">
+            <div class="message assistant">¡Hola! Pregúntame sobre finanzas o cualquier otro tema. Puedes pedirme un ejemplo o continuar con otra pregunta.</div>
+        </div>
+        <div class="suggestions">
+            <button class="chip" data-question="¿Qué es diversificar?">¿Qué es diversificar?</button>
+            <button class="chip" data-question="¿Cómo planeo una meta?">Planear una meta</button>
+            <button class="chip" data-question="¿Cómo se calcula una pérdida?">Entender una pérdida</button>
+        </div>
+        @* Envía la pregunta al servidor. La respuesta se presenta conforme se reciben los fragmentos. *@
+        <form id="chat-form" class="chat-form">
+            <label class="sr-only" for="question">Tu pregunta</label>
+            <input id="question" maxlength="1500" placeholder="Escribe tu pregunta…" required>
+            <button class="button" type="submit">Enviar ↗</button>
+        </form>
+        <p id="chat-note" class="fine">
+        </p>
+    </article>
+</section>
+
+@* Carga JavaScript solo en la página principal, donde existen los controles que necesita. *@
+@section Scripts {
+
+    <script src="~/js/vantex.js" asp-append-version="true" defer></script>
+}

@@ -1,0 +1,94 @@
+@* Estructura común de Razor. Incluye navegación, sesión, notificaciones y contenido de cada página. *@
+@{
+    var esInicio = ViewContext.RouteData.Values["page"]?.ToString() == "/Index";
+}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        @* Indica al navegador que adapte el ancho al dispositivo para que el sitio se pueda usar desde el teléfono. *@
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>@ViewData["Title"] | Vantex</title>
+        <link rel="stylesheet" href="~/css/estilos.css" asp-append-version="true" />
+    </head>
+    <body>
+        <aside class="sidebar">
+            <a class="brand" href="/#inicio">
+                <span class="brand-icon">V</span>
+                <span>vantex<small>NOVA SYSTEMS</small>
+                </span>
+            </a>
+            <p class="nav-label">TU ESPACIO FINANCIERO</p>
+            @* La dirección con # permite entrar a una sección desde un enlace. El atributo data-view identifica la vista para JavaScript. *@
+            <nav aria-label="Secciones">
+                <a class="nav active" data-view="inicio" href="/#inicio">◈ <span>Vista general</span>
+                </a>
+                <a class="nav" data-view="mercados" href="/#mercados">↗ <span>Mercados y simulador</span>
+                </a>
+                <a class="nav" data-view="portafolio" href="/#portafolio">▤ <span>Mi portafolio</span>
+                </a>
+                <a class="nav" data-view="aprende" href="/#aprende">◉ <span>Academia</span>
+                </a>
+                <a class="nav" data-view="metas" href="/#metas">◎ <span>Mis metas</span>
+                </a>
+                <a class="nav" data-view="finanzas" href="/#finanzas">＄ <span>Finanzas personales</span>
+                </a>
+                <a class="nav" data-view="tutor" href="/#tutor">✦ <span>Tutor educativo</span>
+                </a>
+            </nav>
+            <div class="sidebar-bottom">
+                <span class="badge">APRENDE Y PRACTICA</span>
+                <p>Aprende con intención.<br>Practica sin arriesgar dinero real.</p>
+                <small id="storage">Comprobando almacenamiento…</small>
+            </div>
+        </aside>
+        <div class="workspace">
+            <header class="topbar">
+                <div>
+                    <span class="dot">
+                    </span> Entorno de aprendizaje <span class="divider">/</span> <strong>Solo dinero virtual</strong>
+                </div>
+                @if (esInicio)
+                {
+                    <button id="auth-button" class="button secondary">Entrar / Crear cuenta</button>
+                    <button id="logout" class="text-button" hidden>Salir</button>
+                }
+                else
+                {
+                    <a href="/" class="button secondary">Volver a Vantex</a>
+                }
+            </header>
+            <main>
+                <div id="notification" class="notification" role="status" hidden>
+                </div>
+                @RenderBody()
+                <footer>VANTEX · NOVA SYSTEMS <span>Educación financiera. Operaciones exclusivamente virtuales. <a asp-page="/Privacy">Privacidad</a></span>
+                </footer>
+            </main>
+        </div>
+        @* El mismo formulario se usa para iniciar sesión y registrar una cuenta. JavaScript muestra los campos correspondientes. *@
+        <dialog id="auth-dialog">
+            <form id="auth-form" class="stack-form">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">BIENVENIDO A VANTEX</span>
+                        <h2 id="auth-title">Comienza tu recorrido</h2>
+                    </div>
+                    <button id="close-auth" class="text-button" type="button" aria-label="Cerrar">✕</button>
+                </div>
+                <p class="fine">Guarda tu progreso y practica con 10,000 USD virtuales.</p>
+                <label id="name-label">Nombre<input name="nombre" maxlength="80" minlength="2" autocomplete="given-name" required>
+                </label>
+                <label>Correo<input name="email" type="email" maxlength="160" autocomplete="username" required>
+                </label>
+                <label>Contraseña<input name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required>
+                </label>
+                <button class="button" type="submit" id="auth-submit">Crear cuenta · 10,000 USD virtuales</button>
+                <p id="auth-error" role="status">
+                </p>
+                <button id="toggle-auth" class="text-button" type="button">Ya tengo cuenta · Iniciar sesión</button>
+            </form>
+        </dialog>
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
+</html>

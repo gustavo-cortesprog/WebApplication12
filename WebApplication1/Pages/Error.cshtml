@@ -1,0 +1,16 @@
+@* Pantalla de error para páginas Razor que no pueden completar una solicitud. *@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Ocurrió un error";
+}
+<section class="panel">
+    <p class="eyebrow">VANTEX</p>
+    <h1>No se pudo cargar esta página.</h1>
+    <p>Vuelve al inicio e intenta nuevamente.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p>Referencia: <code>@Model.RequestId</code></p>
+    }
+    <a class="button" asp-page="/Index">Volver al inicio</a>
+</section>

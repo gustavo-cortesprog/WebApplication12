@@ -1,0 +1,15 @@
+@* Informa qué datos usa la aplicación y cuáles se conservan localmente. *@
+@page
+@model PrivacyModel
+@{
+    ViewData["Title"] = "Privacidad";
+}
+<section class="panel">
+    <p class="eyebrow">VANTEX</p>
+    <h1>Privacidad y datos</h1>
+    <p>Vantex guarda el nombre, correo de prueba, hash de contraseña, operaciones virtuales, metas y progreso en la base local del proyecto. No realiza operaciones con dinero real.</p>
+    <p>Si SQL no está disponible al iniciar, se indica respaldo local y los datos se guardan en App_Data. No compartas esa carpeta ni uses contraseñas de otros servicios.</p>
+    <p>El modo mercado solicita cotizaciones a proveedores externos. Al activar la IA, el texto de la pregunta se envía a OpenAI; no adjuntamos automáticamente tu perfil ni tu portafolio.</p>
+    <p>La cuenta permite guardar tus operaciones virtuales, tus metas y tu avance en las lecciones.</p>
+    <a class="button" asp-page="/Index">Volver al inicio</a>
+</section>
